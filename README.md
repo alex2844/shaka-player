@@ -56,5 +56,5 @@ document.querySelector('iframe').addEventListener('load', function(e) {
 * Сократить код
 * -.min.js
 
-#### Demo and tests
-https://alex2844.github.io/shaka-player/
+#### Demo
+https://alex2844.github.io/shaka-player/index.html?type=media_player&title=Angel+One&subtitle=&src=https%3A%2F%2Fstorage.googleapis.com%2Fshaka-demo-assets%2Fangel-one%2Fdash.mpd&poster=https%3A%2F%2Fstorage.googleapis.com%2Fshaka-asset-icons%2Fangel_one.webp
