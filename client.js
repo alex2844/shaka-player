@@ -659,6 +659,12 @@ function init() {
 	window.addEventListener('popstate', location.reload.bind(location));
 	window.addEventListener('message', function(e) {
 		console.log('message', e.data);
+		if (e.data.scheme)
+			document.addEventListener('shaka-ui-loaded', function() {
+				for (var k in e.data.scheme) {
+					shaka.net.NetworkingEngine.registerScheme(k, new Function('return '+e.data.scheme[k])());
+				}
+			});
 		if (e.data.type)
 			ajax(e.data);
 	});
