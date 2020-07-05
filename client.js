@@ -132,6 +132,8 @@ function play(obj) {
 						controls = ui.getControls(),
 						player = controls.getPlayer();
 					ui.configure({ overflowMenuButtons : [] });
+					if (obj.maxQuality)
+						player.setMaxHardwareResolution((obj.maxQuality*2), (obj.maxQuality*1));
 					function updatePositionState() {
 						if ('setPositionState' in navigator.mediaSession)
 							navigator.mediaSession.setPositionState({
