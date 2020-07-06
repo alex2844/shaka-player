@@ -555,6 +555,7 @@ function init() {
 	function ajax(ju) {
 		console.log(ju);
 		if (ju.type == 'media_player') {
+			ju.type = null;
 			var container = html(tpls.player)
 			if (window != window.top) {
 				container.style.top = '50%';

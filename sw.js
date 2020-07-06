@@ -4,10 +4,10 @@ if (workbox) {
 	workbox.setConfig({ debug: false });
 	workbox.precaching.precacheAndRoute([{
 		url: './index.html',
-		revision: 'a70611d88d15f27d51ab398659d34d09'
+		revision: '653aff0f50f07b07dea725a5c5ec8c22'
 	}, {
 		url: './client.js',
-		revision: '70e87c81dfd3d76e7071fa082f4e9b02'
+		revision: '74f465385d51a89bea96a848c5ff599a'
 	}]);
 	workbox.routing.registerRoute(new workbox.routing.NavigationRoute(workbox.precaching.createHandlerBoundToURL('./index.html')));
 	workbox.routing.registerRoute(/\.(js|css)$/, new workbox.strategies.StaleWhileRevalidate({ cacheName: 'libs' }));
