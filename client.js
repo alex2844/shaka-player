@@ -128,6 +128,7 @@ function play(obj) {
 				load.addEventListener('load', function() {
 					var playlist = obj.playlist,
 						video = document.querySelector('video[data-shaka-player]'),
+						spinner = video.parentNode.querySelector('.shaka-spinner-container'),
 						ui = video['ui'],
 						controls = ui.getControls(),
 						player = controls.getPlayer();
@@ -234,10 +235,8 @@ function play(obj) {
 							updateOnlineStatus();
 							window.addEventListener('online', updateOnlineStatus);
 							window.addEventListener('offline', updateOnlineStatus);
-							_this.player.addEventListener('loaded', function(e) {
-								_this.button_.style.display = ((video.parentNode.dataset.live = e.target.isLive()) ? 'none' : 'block');
-							});
 							_this.player.addEventListener('loading', function(e) {
+								spinner.classList.remove('shaka-hidden');
 								console.log(playlist[index]);
 								if (playlist[index].src.indexOf('blob:') == 0 || playlist[index].src.indexOf('offline:') == 0)
 									_this.button_.textContent = 'offline_pin';
@@ -260,6 +259,9 @@ function play(obj) {
 											_this.button_.textContent = 'offline_bolt';
 									});
 								}
+							});
+							_this.player.addEventListener('loaded', function(e) {
+								_this.button_.style.display = ((video.parentNode.dataset.live = e.target.isLive()) ? 'none' : 'block');
 							});
 							_this.eventManager.listen(_this.button_, 'click', function() {
 								_this.button_.disabled = true;
@@ -288,6 +290,9 @@ function play(obj) {
 										if (vb)
 											vb.style.display = 'none';
 										_this.progress_.style.display = 'block';
+										setTimeout(function() {
+											spinner.classList.remove('shaka-hidden');
+										});
 										console.log(metadata, fn);
 										if (fn.indexOf('.mpd') > -1 || fn.indexOf('.m3u8') > -1)
 											e.storage.store(track.src, metadata).then(function(v) {
@@ -301,6 +306,7 @@ function play(obj) {
 												if (vb)
 													vb.style.display = 'block';
 												_this.progress_.style.display = 'none';
+												spinner.classList.add('shaka-hidden');
 											});
 										else
 											return new Promise(function(res, rej) {
@@ -336,6 +342,7 @@ function play(obj) {
 												if (vb)
 													vb.style.display = 'block';
 												_this.progress_.style.display = 'none';
+												spinner.classList.add('shaka-hidden');
 											});
 											/*
 											return fetch(track.src).then(function(e_) {
