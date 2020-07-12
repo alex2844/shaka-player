@@ -494,6 +494,8 @@ function play(obj) {
 			])
 		});
 		return tpls['#PLAYER'].player.load(track.src, null, track.type).then(function() {
+			if (track.startTime)
+				tpls['#PLAYER'].video.currentTime = track.startTime;
 			if (track.subtitles && (fn.indexOf('.mp4') == -1))
 				for (var k in track.subtitles) {
 					tpls['#PLAYER'].player.addTextTrack(track.subtitles[k], k, 'subtitle', 'text/vtt');
