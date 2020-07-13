@@ -494,6 +494,8 @@ function play(obj) {
 			])
 		});
 		return tpls['#PLAYER'].player.load(track.src, null, track.type).then(function() {
+			if (track.audio != undefined)
+				tpls["#PLAYER"].player.selectAudioLanguage(tpls["#PLAYER"].player.getAudioLanguages()[track.audio]);
 			if (track.startTime)
 				tpls['#PLAYER'].video.currentTime = track.startTime;
 			if (track.subtitles && (fn.indexOf('.mp4') == -1))

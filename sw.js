@@ -7,7 +7,7 @@ if (workbox) {
 		revision: '653aff0f50f07b07dea725a5c5ec8c22'
 	}, {
 		url: './client.js',
-		revision: '9c154c580de7bcad90bd1835645c50ed'
+		revision: 'adbb78d9310b46474f14a921ab624f93'
 	}]);
 	workbox.routing.registerRoute(new workbox.routing.NavigationRoute(workbox.precaching.createHandlerBoundToURL('./index.html')));
 	workbox.routing.registerRoute(/\.(js|css)$/, new workbox.strategies.StaleWhileRevalidate({ cacheName: 'libs' }));
