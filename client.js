@@ -135,6 +135,21 @@ function play(obj) {
 					ui.configure({ overflowMenuButtons : [] });
 					if (obj.maxQuality)
 						player.setMaxHardwareResolution((obj.maxQuality*2), (obj.maxQuality*1));
+					shaka.net.NetworkingEngine.registerScheme('blob', function(uri, request, requestType, progressUpdated) {
+						var xhr = new window.XMLHttpRequest();
+						return new Promise(function(res) {
+							xhr.open(request.method, uri, true);
+							xhr.responseType = 'arraybuffer';
+							xhr.onload = function(e) {
+								res({
+									uri: e.target.responseURL,
+									originalUri: uri,
+									data: e.target.response
+								});
+							};
+							xhr.send(request.body);
+						});
+					});
 					function updatePositionState() {
 						if ('setPositionState' in navigator.mediaSession)
 							navigator.mediaSession.setPositionState({
@@ -235,34 +250,36 @@ function play(obj) {
 							updateOnlineStatus();
 							window.addEventListener('online', updateOnlineStatus);
 							window.addEventListener('offline', updateOnlineStatus);
-							_this.player.addEventListener('loading', function(e) {
-								spinner.classList.remove('shaka-hidden');
-								console.log(playlist[index]);
-								if (playlist[index].src.indexOf('blob:') == 0 || playlist[index].src.indexOf('offline:') == 0)
-									_this.button_.textContent = 'offline_pin';
-								else{
-									var title = playlist[index].artist || playlist[index].title ? [playlist[index].artist, playlist[index].title].filter(Boolean).join(': ') : playlist[index].src;
-									cacheList().then(function(v) {
-										if (!tpls['#DB'].progress)
-											tpls['#DB'].progress = _this.progress_range_;
-										var i = v.findIndex(function(v_) {
-											return v_.appMetadata.title === title;
+							if ((playlist[index].src.indexOf('blob:') != 0) || (playlist[index].type != 'application/vnd.apple.mpegurl')) {
+								_this.player.addEventListener('loading', function(e) {
+									spinner.classList.remove('shaka-hidden');
+									console.log(playlist[index]);
+									if (playlist[index].src.indexOf('blob:') == 0 || playlist[index].src.indexOf('offline:') == 0)
+										_this.button_.textContent = 'offline_pin';
+									else{
+										var title = playlist[index].artist || playlist[index].title ? [playlist[index].artist, playlist[index].title].filter(Boolean).join(': ') : playlist[index].src;
+										cacheList().then(function(v) {
+											if (!tpls['#DB'].progress)
+												tpls['#DB'].progress = _this.progress_range_;
+											var i = v.findIndex(function(v_) {
+												return v_.appMetadata.title === title;
+											});
+											if (i > -1) {
+												playlist[index].originalManifestUri = playlist[index].src;
+												playlist[index].src = v[i].offlineUri;
+												playlist[index].type = v[i].type;
+												tpls['#PLAYER'].load(playlist[index]);
+												// e.target.load((playlist[index].src = v[i].offlineUri), null, (playlist[index].type = v[i].type));
+												_this.button_.textContent = 'offline_pin';
+											}else
+												_this.button_.textContent = 'offline_bolt';
 										});
-										if (i > -1) {
-											playlist[index].originalManifestUri = playlist[index].src;
-											playlist[index].src = v[i].offlineUri;
-											playlist[index].type = v[i].type;
-											tpls['#PLAYER'].load(playlist[index]);
-											// e.target.load((playlist[index].src = v[i].offlineUri), null, (playlist[index].type = v[i].type));
-											_this.button_.textContent = 'offline_pin';
-										}else
-											_this.button_.textContent = 'offline_bolt';
-									});
-								}
-							});
-							_this.player.addEventListener('loaded', function(e) {
-								_this.button_.style.display = ((video.parentNode.dataset.live = e.target.isLive()) ? 'none' : 'block');
-							});
+									}
+								});
+								_this.player.addEventListener('loaded', function(e) {
+									_this.button_.style.display = ((video.parentNode.dataset.live = e.target.isLive()) ? 'none' : 'block');
+								});
+							}
 							_this.eventManager.listen(_this.button_, 'click', function() {
 								_this.button_.disabled = true;
 								_this.player.unload();
@@ -522,6 +539,20 @@ function play(obj) {
 					}
 					img.src = track.poster;
 				}
+			}
+		}).catch(function(err) {
+			if ((err.code == 4022) && (track.src.indexOf('http') == 0)) {
+				track.src = URL.createObjectURL(new Blob([[
+					'#EXTM3U',
+					'#EXT-X-STREAM-INF:BANDWIDTH=1280000,AVERAGE-BANDWIDTH=1000000',
+					track.src
+				].join('\r\n')]));
+				track.type = 'application/vnd.apple.mpegurl';
+				tpls['#PLAYER'].load(track);
+			}else{
+				if (window != window.top)
+					window.top.postMessage({ type: 'error', err }, '*');
+				throw err;
 			}
 		});
 	})(obj.playlist[index]);
