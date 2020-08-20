@@ -612,7 +612,7 @@ function init() {
 					ju.type = ju.local.type;
 					ju.originalManifestUri = ju.local.name;
 				}
-				ju.playlist = [ ju ];
+				ju.playlist = [ Object.assign({}, ju) ];
 			}
 			play(ju);
 		}else if (ju.type == 'cast_sender') {
