@@ -599,7 +599,7 @@ function init() {
 		if (ju.type == 'media_player') {
 			ju.type = null;
 			var container = html(tpls.player)
-			if (window != window.top) {
+			if ((window != window.top) || (navigator.userAgent.indexOf(' CrKey/') > -1)) {
 				container.style.top = '50%';
 				container.style.transform = 'translateY(-50%)';
 			}
