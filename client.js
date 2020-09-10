@@ -691,7 +691,7 @@ function init() {
 	}
 	function init_() {
 		var ju = Object.fromEntries(new URLSearchParams(location.search))
-		if (window == window.top) {
+		if ((window == window.top) && (navigator.userAgent.indexOf(' CrKey/') == -1)) {
 			document.body.appendChild(tpls['#ROOT'] = html(tpls.template));
 			ajax(ju);
 		}else if (ju.type)
