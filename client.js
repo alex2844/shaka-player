@@ -694,8 +694,11 @@ function init() {
 		if ((window == window.top) && (navigator.userAgent.indexOf(' CrKey/') == -1)) {
 			document.body.appendChild(tpls['#ROOT'] = html(tpls.template));
 			ajax(ju);
-		}else if (ju.type)
+		}else if (ju.type) {
+			if (navigator.userAgent.indexOf(' CrKey/') > -1)
+				document.body.style['background-color'] = '#000';
 			ajax(ju);
+		}
 	}
 	if ('serviceWorker' in navigator)
 		navigator.serviceWorker.register('sw.js').then(init_, init_).catch(init_);
