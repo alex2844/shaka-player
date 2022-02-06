@@ -3,6 +3,7 @@ var tpls = {
 	'#DB': null,
 	'#PLAYER': null,
 	'#SENDER': null,
+	'#IFRAME': ((window != window.top) ? window.top : null),
 	template: [
 		'<link rel="stylesheet" href="https://alex2844.github.io/qad-cmf/dist/css/tablet_dark.css" />',
 		'<link rel="stylesheet" href="https://alex2844.github.io/qad-cmf/dist/css/shaka.css" />',
@@ -460,14 +461,14 @@ function play(obj) {
 							});
 						}
 						video.addEventListener('ended', function(e) {
-							if (window != window.top)
-								window.top.postMessage({ type: e.type }, '*');
+							if (tpls['#IFRAME'])
+								tpls['#IFRAME'].postMessage({ type: e.type }, '*');
 							if (playlist.length > 1)
 								next();
 						});
-						if (window != window.top)
+						if (tpls['#IFRAME'])
 							video.addEventListener('timeupdate', function(e) {
-								window.top.postMessage({
+								tpls['#IFRAME'].postMessage({
 									type: e.type,
 									currentTime: e.target.currentTime,
 									duration: e.target.duration
@@ -483,8 +484,8 @@ function play(obj) {
 		return document.body.append(load);
 	}
 	(tpls['#PLAYER'].load = function(track) {
-		if (window != window.top)
-			window.top.postMessage({ type: 'load', track }, '*');
+		if (tpls['#IFRAME'])
+			tpls['#IFRAME'].postMessage({ type: 'load', track }, '*');
 		if (!track.src)
 			return;
 		var fn = (track.format ? '.'+track.format : (track.originalManifestUri || track.src).split('/').pop().split('#')[0].split('?')[0]);
@@ -550,8 +551,8 @@ function play(obj) {
 				track.type = 'application/vnd.apple.mpegurl';
 				tpls['#PLAYER'].load(track);
 			}else{
-				if (window != window.top)
-					window.top.postMessage({ type: 'error', err }, '*');
+				if (tpls['#IFRAME'])
+					tpls['#IFRAME'].postMessage({ type: 'error', err }, '*');
 				throw err;
 			}
 		});
@@ -599,7 +600,7 @@ function init() {
 		if (ju.type == 'media_player') {
 			ju.type = null;
 			var container = html(tpls.player)
-			if ((window != window.top) || (navigator.userAgent.indexOf(' CrKey/') > -1)) {
+			if (tpls['#IFRAME'] || (navigator.userAgent.indexOf(' CrKey/') > -1)) {
 				container.style.top = '50%';
 				container.style.transform = 'translateY(-50%)';
 			}
@@ -706,7 +707,8 @@ function init() {
 		init_();
 	window.addEventListener('popstate', location.reload.bind(location));
 	window.addEventListener('message', function(e) {
-		console.log('message', e.data);
+		console.log('message', e.data, {e});
+		tpls['#IFRAME'] = e.source;
 		if (e.data.scheme)
 			document.addEventListener('shaka-ui-loaded', function() {
 				for (var k in e.data.scheme) {
