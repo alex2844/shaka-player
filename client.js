@@ -133,6 +133,8 @@ function play(obj) {
 						ui = video['ui'],
 						controls = ui.getControls(),
 						player = controls.getPlayer();
+					if (obj.hideControls)
+						controls.setEnabledShakaControls();
 					ui.configure({ overflowMenuButtons : [] });
 					if (obj.maxQuality)
 						player.setMaxHardwareResolution((obj.maxQuality*2), (obj.maxQuality*1));
@@ -460,20 +462,31 @@ function play(obj) {
 								next();
 							});
 						}
-						video.addEventListener('ended', function(e) {
-							if (tpls['#IFRAME'])
-								tpls['#IFRAME'].postMessage({ type: e.type }, '*');
-							if (playlist.length > 1)
-								next();
-						});
+					}
+					video.addEventListener('ended', function(e) {
 						if (tpls['#IFRAME'])
-							video.addEventListener('timeupdate', function(e) {
-								tpls['#IFRAME'].postMessage({
-									type: e.type,
-									currentTime: e.target.currentTime,
-									duration: e.target.duration
-								}, '*');
-							});
+							tpls['#IFRAME'].postMessage({ type: e.type }, '*');
+						if (playlist.length > 1)
+							next();
+					});
+					if (tpls['#IFRAME']) {
+						video.addEventListener('timeupdate', function(e) {
+							tpls['#IFRAME'].postMessage({
+								type: e.type,
+								currentTime: e.target.currentTime,
+								duration: e.target.duration
+							}, '*');
+						});
+						video.addEventListener('play', function(e) {
+							tpls['#IFRAME'].postMessage({
+								type: e.type
+							}, '*');
+						});
+						video.addEventListener('pause', function(e) {
+							tpls['#IFRAME'].postMessage({
+								type: e.type
+							}, '*');
+						});
 					}
 					play(obj);
 				});
@@ -717,5 +730,17 @@ function init() {
 			});
 		if (e.data.type)
 			ajax(e.data);
+		if (tpls['#PLAYER']) {
+			if (e.data.state != undefined) {
+				if (e.data.state == 'play')
+					tpls['#PLAYER'].video.play();
+				else if (e.data.state == 'pause')
+					tpls['#PLAYER'].video.pause();
+			}
+			if (e.data.currentTime != undefined)
+				tpls['#PLAYER'].video.currentTime = e.data.currentTime;
+			if (e.data.speed != undefined)
+				tpls['#PLAYER'].video.playbackRate = e.data.speed;
+		}
 	});
 }
