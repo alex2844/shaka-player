@@ -22,7 +22,7 @@ var tpls = {
 		'</div><div class="actions"><button>ok</button><div style="flex:1"></div><a href="?type=cache" style="padding:8px"><img src="https://fonts.gstatic.com/s/i/materialicons/offline_bolt/v6/24px.svg" /></a></div></form>'
 	].join(''),
 	player: [
-		'<div data-shaka-player-cast-receiver-id="7B25EC44" data-shaka-player-container>',
+		'<div data-shaka-player-cast-receiver-id="BBED8D28" data-shaka-player-container>',
 			'<style>[data-shaka-player-container][data-live="true"] .shaka-current-time, [data-shaka-player-container][data-live="true"] .shaka-seek-bar-container { display: none }</style>',
 			'<video autoplay data-shaka-player style="width:100%;height:100%;max-width:100vw;max-height:100vh;"></video>',
 		'</div>'
