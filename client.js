@@ -64,7 +64,7 @@ function db(video) {
 			load.href = 'https://shaka-player-demo.appspot.com/dist/controls.css';
 			load.addEventListener('load', function() {
 				load = document.createElement('script');
-				load.src = 'https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.1/shaka-player.ui.js';
+				load.src = 'https://ajax.googleapis.com/ajax/libs/shaka-player/4.1.1/shaka-player.ui.js';
 				load.addEventListener('load', function() {
 					res(db(video));
 				});
@@ -122,7 +122,7 @@ function play(obj) {
 		load.href = 'https://shaka-player-demo.appspot.com/dist/controls.css';
 		load.addEventListener('load', function() {
 			load = document.createElement('script');
-			load.src = 'https://ajax.googleapis.com/ajax/libs/shaka-player/3.0.1/shaka-player.ui.js';
+			load.src = 'https://ajax.googleapis.com/ajax/libs/shaka-player/4.1.1/shaka-player.ui.js';
 			document.addEventListener('shaka-ui-loaded', function() { // load.addEventListener('load', function() {
 				load = document.createElement('script');
 				load.src = 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js';
